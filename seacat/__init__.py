@@ -68,6 +68,13 @@ def ping(on_pong = None):
 	return Reactor.ping_factory.ping(Reactor, on_pong)
 
 
+def getHTTPHandler():
+	global Reactor
+	if Reactor is None: return None
+	from .http.handler import SeaCatHttpHandler
+	return SeaCatHttpHandler(Reactor)
+
+
 def getState():
 	global Reactor
 	if Reactor is None: return None
