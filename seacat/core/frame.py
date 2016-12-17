@@ -13,3 +13,6 @@ class Frame(object):
 		self.limit = self.position
 		self.position = 0
 
+	def save(self, fname):
+		f = open(fname, 'wb')
+		f.write(self.data[0:self.limit])
