@@ -82,3 +82,14 @@ def isReady(wait_timeout=0.0):
 	wait_timeout = None -> wait forever
 	'''
 	return Reactor.is_ready_event.wait(wait_timeout)
+
+def isAlive():
+	global Reactor
+	if (Reactor is None): return False
+	return Reactor.isAlive()
+
+def join(timeout=None):
+	global Reactor
+	if (Reactor is None): return None
+	return Reactor.join(timeout)
+

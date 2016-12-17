@@ -52,26 +52,29 @@ class Reactor(object):
 
 	###
 
+
 	def start(self):
 		self.reactor_thread.start()
 
-	def isstarted(self):
+	def isAlive(self):
 		if self.reactor_thread is None: return False
-		return self.reactor_thread.is_alive()
+		return self.reactor_thread.is_alive()		
 
-	def shutdown(self):
-		if self.reactor_thread is None: return
+	def join(self, timeout=None):
+		if self.reactor_thread is None: return None
+		return self.reactor_thread.join(timeout)
 
+	def shutdown(self, timeout=None):
 		seacatcc.shutdown()
-		self.reactor_thread.join()
-
-		self.reactor_thread = None
-		self.refs = []
+		self.join()
 
 	def _run(self):
 		rc = seacatcc.run()
 		if rc != seacatcc.RC_OK:
 			L.error("SeaCat C-Code return code {}".format(rc))
+		
+		self.reactor_thread = None
+		self.refs = []
 
 
 	def hook_register(self, code, callback):
