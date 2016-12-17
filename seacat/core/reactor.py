@@ -3,6 +3,7 @@ from . import seacatcc, framepool, state
 from ..exception import SeaCatError
 from .. import spdy
 from ..ping.ping_factory import PingFactory
+from .streamfactory import StreamFactory
 
 ###
 
@@ -45,10 +46,14 @@ class Reactor(object):
 
 		# Factories
 		self.ping_factory = PingFactory()
+		self.stream_factory = StreamFactory()
 
 		# Frame consumers
 		self.cntl_frame_consumers = dict()
 		self.cntl_frame_consumers[(spdy.CNTL_FRAME_VERSION_SPD3 << 16) | spdy.CNTL_FRAME_TYPE_PING] = self.ping_factory;
+		self.cntl_frame_consumers[(spdy.CNTL_FRAME_VERSION_ALX1 << 16) | spdy.CNTL_FRAME_TYPE_SYN_REPLY] = self.stream_factory;
+		self.cntl_frame_consumers[(spdy.CNTL_FRAME_VERSION_SPD3 << 16) | spdy.CNTL_FRAME_TYPE_RST_STREAM] = self.stream_factory;
+
 
 	###
 
