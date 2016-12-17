@@ -1,4 +1,5 @@
 import logging, threading
+from .status import HTTPStatus
 from ..spdy import alx1_http
 
 ###
@@ -89,12 +90,16 @@ class SeaCatHTTPResponse(object):
 				# We received a RST_STREAM
 				self.code = 501
 				self.reason = "SPDY Error {}".format(self.stream.reset_status_code)
-				break;
+				break
 
 			if self.stream.http_status_code is not None:
 				self.code = self.stream.http_status_code
 				self.reason = "REASON MISSING" #TODO: Lookup reasons
-				break;
+				for s in HTTPStatus:
+					if (s == self.code):
+						self.reason = s.phrase
+						break
+				break
 
 
 	def info(self):
