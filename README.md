@@ -8,16 +8,16 @@ TeskaLabs SeaCat client for Python3
 
 ## HTTP client example
 
-	import seacat
+```python
+import seacat
 
-	# Install HTTP handler into urllib chain
-	handler = seacat.getHTTPHandler()
-	opener = urllib.request.build_opener(handler)
-	urllib.request.install_opener(opener)
+# Install HTTP handler into urllib chain
+handler = seacat.getHTTPHandler()
+opener = urllib.request.build_opener(handler)
+urllib.request.install_opener(opener)
 	
-	# Use urllib in the normal fashion
-	response = urllib.request.urlopen('http://example.com/')
-	body = response.read()
-	print(body)
-	
-
+# Use urllib in the normal fashion
+response = urllib.request.urlopen('http://example.com/')
+body = response.read()
+print(body)
+```	
