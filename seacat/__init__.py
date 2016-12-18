@@ -68,11 +68,18 @@ def ping(on_pong = None):
 	return Reactor.ping_factory.ping(Reactor, on_pong)
 
 
-def getHTTPHandler():
+def get_seacat_handler():
 	global Reactor
 	if Reactor is None: return None
 	from .http.handler import SeaCatHttpHandler
 	return SeaCatHttpHandler(Reactor)
+
+
+def install_urllib_opener():
+	import urllib.request
+	handler = get_seacat_handler()
+	opener = urllib.request.build_opener(handler)
+	urllib.request.install_opener(opener)
 
 
 def getState():
