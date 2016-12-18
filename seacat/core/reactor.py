@@ -108,6 +108,11 @@ class Reactor(object):
 		return consumer.received_cntl_frame(frame, version, ftype, length, flags)
 
 
+	def _received_data_frame(self, frame):
+		stream_id, flags, fin_flag, length = spdy.parse_data_frame(frame)
+		return self.stream_factory.received_data_frame(stream_id, frame, flags, fin_flag, length)
+
+
 	def _hook_frame_received(self, data, data_len):
 		assert(self.read_frame is not None)
 		assert(ctypes.addressof(self.read_frame.data) == data)
@@ -126,8 +131,7 @@ class Reactor(object):
 				give_back = self._received_cntl_frame(frame)
 
 			else:
-				#TODO: This...
-				print("Received data frame:", frame, fb)
+				give_back = self._received_data_frame(frame)
 
 		except:
 			L.exception("Error when processing incoming frame")

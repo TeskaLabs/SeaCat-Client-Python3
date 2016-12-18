@@ -55,3 +55,15 @@ class StreamFactory(object):
 		return True
 
 
+	def received_data_frame(self, stream_id, frame, flags, fin_flag, length):
+		if fin_flag:
+			stream = self.streams.pop(stream_id, None)
+		else:
+			stream = self.streams.get(stream_id, None)
+
+		if (stream is None):
+			L.warn("DATA for unknown stream {}".format(stream_id))
+			#TODO: Send RST_STREAM
+			return True
+
+		return stream.data(frame, flags, fin_flag, length)

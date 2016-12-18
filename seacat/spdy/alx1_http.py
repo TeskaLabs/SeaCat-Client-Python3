@@ -31,15 +31,17 @@ def build_syn_stream_frame(frame, stream_id, host, method, path):
 
 def parse_rst_stream_frame(frame):
 	'''returns (stream_id, status_code) '''
-	assert(frame.limit == SPDY_HEADER_SIZE + 8)
-	return struct.unpack_from("!II", frame.data, frame.position + SPDY_HEADER_SIZE)
+	assert(frame.limit == frame.position + 8)
+	return struct.unpack_from("!II", frame.data, frame.position)
+	frame.position += 8
 
 
 def parse_alx1_syn_reply_frame(frame):
-	stream_id, status_code, _ = struct.unpack_from("!Ihh", frame.data, frame.position + SPDY_HEADER_SIZE)
+	assert(frame.limit >= frame.position + 8)
+	stream_id, status_code, _ = struct.unpack_from("!Ihh", frame.data, frame.position)
+	frame.position += 8
 
 	kv = []
-	frame.position = frame.position + SPDY_HEADER_SIZE + 8
 	while frame.position < frame.limit:
 		hname = spdy_read_vle_string(frame)
 		vname = spdy_read_vle_string(frame)

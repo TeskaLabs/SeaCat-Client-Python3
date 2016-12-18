@@ -1,4 +1,4 @@
-import logging, threading
+import logging, threading, http.client, io, os
 from ..spdy import alx1_http
 
 ###
@@ -22,6 +22,9 @@ class SeaCatHTTPStream(object):
 		self.reset_status_code = None
 		self.http_status_code = None
 		self.http_headers = None
+
+		#TODO: os.pipe can be replaced by in-memory queue
+		self.resp_fp = None
 
 
 	def send(self, method, path, body=None, headers={}):
@@ -55,6 +58,7 @@ class SeaCatHTTPStream(object):
 
 
 	def reset_stream(self, status_code, flags):
+		'''Stream factory'''
 		with self.response_ready_cv:
 			self.reset_status_code = status_code
 			if not self.response_ready:
@@ -63,12 +67,32 @@ class SeaCatHTTPStream(object):
 
 
 	def syn_reply(self, status_code, kv, flags):
+		'''Stream factory'''
 		with self.response_ready_cv:
 			self.http_status_code = status_code
 			self.http_headers = kv
+
+			r, w = os.pipe()
+			self.resp_fp = (io.open(r, mode="rb", closefd=True), io.open(w, mode="wb", closefd=True))
+
 			if not self.response_ready:
 				self.response_ready = True
 				self.response_ready_cv.notify_all()		
+
+
+	def data(self, frame, flags, fin_flag, length):
+		'''Stream factory'''
+		self.resp_fp[1].write(frame.data[frame.position:frame.limit])
+		if fin_flag:
+			self.resp_fp[1].close()
+		return True
+
+
+	def get_response_headers(self):
+		assert(self.http_headers is not None)
+		#TODO: Transform into http.client.HTTPMessage
+		# Python uses for that email.parser.Parser (wierd but true)
+		return self.http_headers
 
 ###
 
@@ -80,9 +104,10 @@ class SeaCatHTTPResponse(object):
 		self.reason = "AAAA"
 		self.code = 200
 
+		self.headers = None
+
 		# TODO: implement timeout
 		while True:
-
 			self.stream.wait()
 
 			if self.stream.reset_status_code is not None:
@@ -94,15 +119,45 @@ class SeaCatHTTPResponse(object):
 			if self.stream.http_status_code is not None:
 				self.code = self.stream.http_status_code
 				self.reason = http.client.responses.get(self.code, "REASON MISSING")
+				self.headers = self.stream.get_response_headers()
+				break
 
-	def info(self):
-		return "xxx - info"
 
-	def read(self):
-		return "xxx - read"
+	def read(self, amt=None):
+		return self.stream.resp_fp[0].read(amt)
 
 	def close(self):
 		return "xxx - close"
+
+	###
+
+	def getheader(self, name, default=None):
+		if self.headers is None:
+			raise http.client.ResponseNotReady()
+
+		headers = self.headers.get_all(name) or default
+		if isinstance(headers, str) or not hasattr(headers, '__iter__'):
+			return headers
+		else:
+			return ', '.join(headers)
+
+	def getheaders(self):
+		"""Return list of (header, value) tuples."""
+		if self.headers is None:
+			raise http.client.ResponseNotReady()
+		return list(self.headers.items())
+
+	# For compatibility with old-style urllib responses.
+
+	def info(self):
+		return self.headers
+
+	def geturl(self):
+		#TODO: This ...
+		return self.url
+
+	def getcode(self):
+		return self.code
 
 ###
 
