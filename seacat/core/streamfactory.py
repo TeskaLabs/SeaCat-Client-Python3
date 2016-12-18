@@ -17,7 +17,6 @@ class StreamFactory(object):
 
 	def register_stream(self, stream):
 		streamid = next(self.stream_id_seq)
-		print(">>>>>>", streamid)
 		self.streams[streamid] = stream
 		return streamid
 
@@ -46,7 +45,6 @@ class StreamFactory(object):
 
 
 	def received_cntl_frame(self, frame, version, ftype, length, flags):
-
 		if ((version == spdy.CNTL_FRAME_VERSION_ALX1) and (ftype == spdy.CNTL_FRAME_TYPE_SYN_REPLY)):
 			return self.received_ALX1_SYN_REPLY(frame, length, flags)
 
