@@ -15,6 +15,8 @@ def build_ping_frame(frame, ping_id):
 
 	return frame
 
+
 def parse_ping_frame(frame):
-	assert(frame.limit == SPDY_HEADER_SIZE + 4)
-	return struct.unpack_from("!I", frame.data, SPDY_HEADER_SIZE)
+	assert(frame.limit == frame.position + 4)
+	return struct.unpack_from("!I", frame.data, frame.position)
+	frame.position += 4
