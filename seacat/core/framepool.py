@@ -15,7 +15,9 @@ class FramePool(object):
 			self.q.put(frame)
 
 	def borrow(self):
-		return self.q.get()
+		frame = self.q.get()
+		frame.reset()
+		return frame
 
 	def putback(self, frame):
 		self.q.put(frame)
