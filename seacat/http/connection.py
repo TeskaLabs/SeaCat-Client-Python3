@@ -1,5 +1,4 @@
 import logging, threading
-from .status import HTTPStatus
 from ..spdy import alx1_http
 
 ###
@@ -94,13 +93,7 @@ class SeaCatHTTPResponse(object):
 
 			if self.stream.http_status_code is not None:
 				self.code = self.stream.http_status_code
-				self.reason = "REASON MISSING" #TODO: Lookup reasons
-				for s in HTTPStatus:
-					if (s == self.code):
-						self.reason = s.phrase
-						break
-				break
-
+				self.reason = http.client.responses.get(self.code, "REASON MISSING")
 
 	def info(self):
 		return "xxx - info"
