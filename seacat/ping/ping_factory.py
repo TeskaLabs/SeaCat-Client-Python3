@@ -26,7 +26,10 @@ class PingFactory(object):
 
 
 	def build_frame(self, reactor):
-		p = self.outbound_ping_q.get_nowait()
+		try:
+			p = self.outbound_ping_q.get_nowait()
+		except queue.Empty:
+			p = None
 		if p is None: return None, False
 
 		p.ping_id = next(self.id_seq)
