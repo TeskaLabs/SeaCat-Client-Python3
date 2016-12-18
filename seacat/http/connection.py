@@ -33,9 +33,10 @@ class SeaCatHTTPStream(object):
 
 		self.method = method
 		self.path = path
-		self.body = body
-		self.headers = headers
+		self.body = body # Can be a 'bytes' for fixed Content-Length transfers or file-like object for Transfer-Encoding: chunked
+		self.headers = headers # Dictionary
 
+		self.send_syn_frame = True
 		self.reactor.register_frame_provider(self, False)
 
 
@@ -47,14 +48,52 @@ class SeaCatHTTPStream(object):
 
 	def build_frame(self, reactor):
 		'''Interface to reactor'''
-		assert(self.stream_id is None)
-		self.stream_id = reactor.stream_factory.register_stream(self)
 
-		frame = reactor.frame_pool.borrow()
-		alx1_http.build_syn_stream_frame(frame, self.stream_id, self.host, self.method, self.path)
-		frame.flip()
+		if self.send_syn_frame:
+			# Send SYN FRAME
+			assert(self.stream_id is None)
+			self.stream_id = reactor.stream_factory.register_stream(self)		
 
-		return frame, False
+			#TODO: If self.body has fixed and known length, add Content-Length attribute
+			if self.body is not None:
+				if hasattr(self.body, "read"):
+					pass #TODO: Set Transfer-Encoding: chunked
+				else:
+					self.headers['Content-Length'] = "{}".format(len(self.body))
+
+			fin_flag = (self.body is None)
+			self.send_syn_frame = False
+			frame = reactor.frame_pool.borrow()
+			alx1_http.build_syn_stream_frame(frame, self.stream_id, self.host, self.method, self.path, self.headers, fin_flag)
+			frame.flip()
+
+		# Send DATA packets
+		elif hasattr(self.body, "read"):
+			#TODO: this ...
+			raise RuntimeError("Not implemented yet")
+
+		else:
+			# Byte-buffer like data to be sent
+			body_len = len(self.body)
+			if (body_len < 8192): # 8k frame size
+				fin_flag = True
+				
+				frame = reactor.frame_pool.borrow()
+				alx1_http.build_data_frame(frame, self.stream_id, self.body, fin_flag)
+				frame.flip()
+			
+			else:
+				body = self.body[:8192]
+				self.body = self.body[8192:]
+
+				fin_flag = len(self.body) == 0
+				
+				frame = reactor.frame_pool.borrow()
+				alx1_http.build_data_frame(frame, self.stream_id, body, fin_flag)
+				frame.flip()
+
+
+		return frame, not fin_flag
 
 
 	def reset_stream(self, status_code, flags):
@@ -170,8 +209,8 @@ class SeaCatHTTPConnection(object):
 		self.response = None
 
 
-	def request(self, method, url, body=None, headers={}):
-		self.stream.send(method, url, body, headers)
+	def request(self, method, url, body=None, headers=None):
+		self.stream.send(method, url, body, headers if not None else {})
 
 	def getresponse(self):
 		if self.response is not None:
