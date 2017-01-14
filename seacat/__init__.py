@@ -1,5 +1,6 @@
 import atexit, threading
 
+from . import plugin
 from .core import reactor, seacatcc
 from .exception import SeaCatError
 
@@ -34,6 +35,8 @@ def initialize(appid, appid_suffix = None, platform = None, var_directory = None
 	Reactor.start()
 
 	atexit.register(__atexit)
+
+	plugin.commit_capabilities()
 
 
 def __atexit():
