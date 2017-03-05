@@ -160,3 +160,15 @@ def capabilities_store(caps):
 	rc = seacatclcc.seacatcc_capabilities_store(caps_arr)
 	if (rc != RC_OK): raise SeaCatError(rc)
 
+##
+
+seacatclcc.seacatcc_socket_configure_worker.argtypes = [ctypes.c_uint16, ctypes.c_uint16, ctypes.c_uint16, ctypes.c_uint16, ctypes.c_char_p, ctypes.c_char_p];
+
+def socket_configure_worker(port, af_domain, af_type, af_protocol, peer_address, peer_port):
+	rc = seacatclcc.seacatcc_socket_configure_worker(
+		port,
+		af_domain, af_type, af_protocol,
+		peer_address.encode('utf-8'), peer_port.encode('utf-8')
+	)
+	if (rc != RC_OK): raise SeaCatError(rc)
+

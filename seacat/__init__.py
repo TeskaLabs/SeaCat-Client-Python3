@@ -110,3 +110,6 @@ def join(timeout=None):
 	if (Reactor is None): return None
 	return Reactor.join(timeout)
 
+def configureSocket(port, af_domain, af_type, af_protocol, peer_address, peer_port):
+	seacatcc.socket_configure_worker(port, af_domain, af_type, af_protocol, peer_address, peer_port)
+
