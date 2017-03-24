@@ -172,3 +172,10 @@ def socket_configure_worker(port, af_domain, af_type, af_protocol, peer_address,
 	)
 	if (rc != RC_OK): raise SeaCatError(rc)
 
+###
+
+seacatclcc.seacatcc_set_discover_domain.argtypes = [ctypes.c_char_p]
+
+def set_discover_domain(domain):
+	seacatclcc.seacatcc_set_discover_domain(domain.encode('utf-8'))
+

@@ -113,3 +113,6 @@ def join(timeout=None):
 def configureSocket(port, af_domain, af_type, af_protocol, peer_address, peer_port):
 	seacatcc.socket_configure_worker(port, af_domain, af_type, af_protocol, peer_address, peer_port)
 
+def setDiscoverDomain(domain):
+	seacatcc.set_discover_domain(domain)
+
