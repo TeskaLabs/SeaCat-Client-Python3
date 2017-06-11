@@ -102,7 +102,7 @@ class Reactor(object):
 
 		consumer = self.cntl_frame_consumers.get((version << 16 ) | ftype)
 		if consumer is None:
-			L.warn("Unidentified Control frame received: {} {} {} {}", version, ftype, flags, length)
+			L.warn("Unidentified Control frame received: {:04X} {:04X} {:X} {}".format(version, ftype, flags, length))
 			return True
 
 		return consumer.received_cntl_frame(frame, version, ftype, length, flags)
