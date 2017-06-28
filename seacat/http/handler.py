@@ -7,6 +7,7 @@ class SeaCatHttpHandler(urllib.request.AbstractHTTPHandler):
 
 	def __init__(self, reactor):
 		super(urllib.request.AbstractHTTPHandler, self).__init__()
+		self._debuglevel = 0
 		self.reactor = reactor
 
 	def http_open(self, req):

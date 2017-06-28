@@ -209,7 +209,8 @@ class SeaCatHTTPConnection(object):
 		self.response = None
 
 
-	def request(self, method, url, body=None, headers=None):
+	def request(self, method, url, body=None, headers=None, encode_chunked=False):
+		#TODO: encode_chunked implementation
 		self.stream.send(method, url, body, headers if not None else {})
 
 	def getresponse(self):
@@ -222,3 +223,6 @@ class SeaCatHTTPConnection(object):
 
 	def close(self):
 		print("Close")
+
+	def set_debuglevel(self, level):
+		pass
