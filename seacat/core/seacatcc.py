@@ -150,14 +150,14 @@ def time():
 
 ##
 
-seacatclcc.seacatcc_capabilities_store.argtypes = [ctypes.POINTER(ctypes.c_char_p)]
+seacatclcc.seacatcc_characteristics_store.argtypes = [ctypes.POINTER(ctypes.c_char_p)]
 
-def capabilities_store(caps):
-	caps_l = ["{}\037{}".format(k, v).encode("utf-8") for k, v in caps.items()]
-	caps_l.append(None)
+def characteristics_store(characteristics):
+	characteristics_l = ["{}\037{}".format(k, v).encode("utf-8") for k, v in characteristics.items()]
+	characteristics_l.append(None)
 
-	caps_arr = (ctypes.c_char_p * len(caps_l))(*caps_l)
-	rc = seacatclcc.seacatcc_capabilities_store(caps_arr)
+	characteristics_arr = (ctypes.c_char_p * len(characteristics_l))(*characteristics_l)
+	rc = seacatclcc.seacatcc_characteristics_store(characteristics_arr)
 	if (rc != RC_OK): raise SeaCatError(rc)
 
 ##

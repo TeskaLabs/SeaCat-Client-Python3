@@ -36,7 +36,7 @@ def initialize(appid, appid_suffix = None, platform = None, var_directory = None
 
 	atexit.register(__atexit)
 
-	plugin.commit_capabilities()
+	plugin.commit_characteristics()
 
 
 def __atexit():
