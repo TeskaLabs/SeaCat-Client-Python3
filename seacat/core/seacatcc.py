@@ -69,6 +69,8 @@ def init(reactor, appid, appid_suffix, platform, var_directory):
 	hook_worker_request = hook_worker_request_type(reactor._hook_worker_request)
 	hook_evloop_heartbeat = hook_evloop_heartbeat_type(reactor._hook_evloop_heartbeat)
 
+	seacatclcc.seacatcc_log_set_mask(1);
+
 	# Initialize SeaCat client
 	rc = seacatclcc.seacatcc_init(
 		appid.encode('ascii'),
@@ -90,8 +92,6 @@ def init(reactor, appid, appid_suffix, platform, var_directory):
 	reactor.refs.append(hook_frame_return)
 	reactor.refs.append(hook_worker_request)
 	reactor.refs.append(hook_evloop_heartbeat)
-
-	seacatclcc.seacatcc_log_set_mask(1);
 
 ###
 
