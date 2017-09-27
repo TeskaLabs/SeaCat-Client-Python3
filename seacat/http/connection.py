@@ -151,7 +151,7 @@ class SeaCatHTTPResponse(object):
 
 			if self.stream.reset_status_code is not None:
 				# We received a RST_STREAM
-				self.code = 501
+				self.code = 500 # Internal Server Error
 				self.reason = "SPDY Error {}".format(self.stream.reset_status_code)
 				break
 
