@@ -71,7 +71,7 @@ class Reactor(object):
 
 	def shutdown(self, timeout=None):
 		seacatcc.shutdown()
-		self.join()
+		self.join(timeout)
 
 	def _run(self):
 		rc = seacatcc.run()
