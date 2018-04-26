@@ -116,3 +116,9 @@ def configureSocket(port, af_domain, af_type, af_protocol, peer_address, peer_po
 def setDiscoverDomain(domain):
 	seacatcc.set_discover_domain(domain)
 
+def deriveKey(key_id, length):
+	global Reactor
+	if Reactor is None: return None
+
+	return seacatcc.derive_key(key_id, length)
+

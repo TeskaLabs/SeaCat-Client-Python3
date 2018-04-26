@@ -179,3 +179,13 @@ seacatclcc.seacatcc_set_discover_domain.argtypes = [ctypes.c_char_p]
 def set_discover_domain(domain):
 	seacatclcc.seacatcc_set_discover_domain(domain.encode('utf-8'))
 
+
+###
+
+seacatclcc.seacatcc_derive_key.argtypes = [ctypes.c_char_p, ctypes.c_uint16, ctypes.c_char_p]
+
+def derive_key(key_id, length):
+	keybuf = ctypes.create_string_buffer(length)
+	rc = seacatclcc.seacatcc_derive_key("{}".format(key_id).encode('utf-8'), length, keybuf)
+	if (rc != RC_OK): raise SeaCatError(rc)
+	return keybuf.raw
