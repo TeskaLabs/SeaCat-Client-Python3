@@ -16,11 +16,12 @@ def initialize(appid, appid_suffix = None, platform = None, var_directory = None
 		on_ready = None,
 		on_connected = None,
 		on_disconnected = None,
+		openssl_engine_ppk = None
 	):
 
 	global Reactor
 	assert(Reactor is None)
-	Reactor = reactor.Reactor(appid, appid_suffix, platform, var_directory)
+	Reactor = reactor.Reactor(appid, appid_suffix, platform, var_directory, openssl_engine_ppk)
 
 	Reactor.on_csr_needed = on_csr_needed
 	Reactor.on_state_changed = on_state_changed

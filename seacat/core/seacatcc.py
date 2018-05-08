@@ -57,10 +57,11 @@ seacatclcc.seacatcc_init.argtypes = [
 	hook_frame_received_type,
 	hook_frame_return_type,
 	hook_worker_request_type,
-	hook_evloop_heartbeat_type
+	hook_evloop_heartbeat_type,
+	ctypes.c_char_p
 ]
 
-def init(reactor, appid, appid_suffix, platform, var_directory):
+def init(reactor, appid, appid_suffix, platform, var_directory, openssl_engine_ppk):
 
 	hook_write_ready = hook_write_ready_type(reactor._hook_write_ready)
 	hook_read_ready = hook_read_ready_type(reactor._hook_read_ready)
@@ -83,6 +84,7 @@ def init(reactor, appid, appid_suffix, platform, var_directory):
 		hook_frame_return,
 		hook_worker_request,
 		hook_evloop_heartbeat,
+		openssl_engine_ppk.encode('ascii') if openssl_engine_ppk is not None else None,
 	)
 	if (rc != RC_OK): raise SeaCatError(rc)
 

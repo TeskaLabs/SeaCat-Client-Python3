@@ -13,7 +13,7 @@ L = logging.getLogger("seacat.core.reactor")
 
 class Reactor(object):
 
-	def __init__(self, appid, appid_suffix, platform, var_directory):
+	def __init__(self, appid, appid_suffix, platform, var_directory, openssl_engine_ppk):
 		self.refs = []
 		self.write_frame = None
 		self.read_frame = None
@@ -37,7 +37,7 @@ class Reactor(object):
 
 		if platform is None:
 			platform = "py3"
-		seacatcc.init(self, appid, appid_suffix, platform, var_directory)
+		seacatcc.init(self, appid, appid_suffix, platform, var_directory, openssl_engine_ppk)
 
 		seacatcc.read_state(self.state_buffer)
 		self.state = state.State(self.state_buffer)
