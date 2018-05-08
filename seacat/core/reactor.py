@@ -235,7 +235,7 @@ class Reactor(object):
 			self.is_disconnected_event.set()
 
 		if self.on_state_changed is not None:
-			self.on_state_changed(s)
+			self.on_state_changed(self.state)
 		
 		if self.state.isReady():
 			self.is_ready_event.set()
