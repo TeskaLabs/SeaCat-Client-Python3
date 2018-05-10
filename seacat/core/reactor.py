@@ -13,7 +13,7 @@ L = logging.getLogger("seacat.core.reactor")
 
 class Reactor(object):
 
-	def __init__(self, appid, appid_suffix, platform, var_directory, openssl_engine_ppk):
+	def __init__(self, appid, appid_suffix, platform, var_directory, openssl_engine_ppk, secret_key_provider):
 		self.refs = []
 		self.write_frame = None
 		self.read_frame = None
@@ -32,6 +32,8 @@ class Reactor(object):
 		self.frame_pool = framepool.FramePool()
 		self.reactor_thread = threading.Thread(target=self._run, name="SeaCatReactorThread", daemon=True)
 		self.active_workers = list()
+
+		self.secret_key_provider = secret_key_provider if secret_key_provider is not None else self._default_secret_key_worker
 
 		self.frame_providers = queue.Queue()
 
@@ -192,6 +194,11 @@ class Reactor(object):
 			w.start()
 			self.active_workers.append(w)
 
+		elif worker_code == b's':
+			w = threading.Thread(name="SeaCatSecretKeyWorkerThread", target=self.secret_key_provider)
+			w.start()
+			self.active_workers.append(w)
+
 		else:
 			L.error("Unknown worker requested: '{}'".format(worker_code.decode('utf-8')))
 
@@ -244,3 +251,7 @@ class Reactor(object):
 				self.on_ready = None # Call only once
 		else:
 			self.is_ready_event.clear()
+
+
+	def _default_secret_key_worker(self):
+		seacatcc.secret_key_worker(b"12345678901234567890123456789012")

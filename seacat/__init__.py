@@ -16,12 +16,13 @@ def initialize(appid, appid_suffix = None, platform = None, var_directory = None
 		on_ready = None,
 		on_connected = None,
 		on_disconnected = None,
-		openssl_engine_ppk = None
+		openssl_engine_ppk = None,
+		secret_key_provider = None,
 	):
 
 	global Reactor
 	assert(Reactor is None)
-	Reactor = reactor.Reactor(appid, appid_suffix, platform, var_directory, openssl_engine_ppk)
+	Reactor = reactor.Reactor(appid, appid_suffix, platform, var_directory, openssl_engine_ppk, secret_key_provider=secret_key_provider)
 
 	Reactor.on_csr_needed = on_csr_needed
 	Reactor.on_state_changed = on_state_changed
@@ -122,4 +123,7 @@ def deriveKey(key_id, length):
 	if Reactor is None: return None
 
 	return seacatcc.derive_key(key_id, length)
+
+def setSecretKey(key):
+	seacatcc.secret_key_worker(key)
 
