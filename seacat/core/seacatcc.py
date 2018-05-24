@@ -197,7 +197,10 @@ def derive_key(key_id, length):
 seacatclcc.seacatcc_secret_key_worker.argtypes = [ctypes.c_char_p];
 
 def secret_key_worker(secret_key):
-	assert(len(secret_key) == 32)
-	rc = seacatclcc.seacatcc_secret_key_worker(secret_key)
+	if secret_key is not None:
+		assert(len(secret_key) == 32)
+		rc = seacatclcc.seacatcc_secret_key_worker(secret_key)
+	else:
+		rc = seacatclcc.seacatcc_secret_key_worker(None)
 	if (rc != RC_OK): raise SeaCatError(rc)
 
