@@ -50,6 +50,11 @@ def __atexit():
 		Reactor.shutdown()
 		Reactor = None
 
+def reset():
+	global Reactor
+	assert(Reactor is not None)
+	seacatcc.yield_cmd('r')
+
 
 def connect(wait_timeout = 0):
 	global Reactor
