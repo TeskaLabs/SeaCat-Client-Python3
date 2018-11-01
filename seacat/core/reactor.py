@@ -4,6 +4,7 @@ from ..exception import SeaCatError
 from .. import spdy
 from ..ping.ping_factory import PingFactory
 from .streamfactory import StreamFactory
+from .csr import submitCSR
 
 ###
 
@@ -216,17 +217,14 @@ class Reactor(object):
 	def _hook_csr_worker(self):
 		if self.on_csr_needed is not None:
 			csr_params = self.on_csr_needed()
+			if csr_params is None:
+				# If on_csr_needed returns None, it means that it is deffered
+				# Caller will eventually call seacatcc_csrgen_worker() on its own
+				return
 		else:
 			csr_params = {}
-		arr = (ctypes.c_char_p * (len(csr_params) * 2 + 1))()
-		for x in enumerate(csr_params.items()):
-			i = x[0] * 2			
-			arr[i] = x[1][0].encode('utf-8')
-			arr[i+1] = x[1][1].encode('utf-8')
-		arr[len(csr_params) * 2] = None
 
-		rc = seacatcc.seacatclcc.seacatcc_csrgen_worker(arr)
-		if (rc != seacatcc.RC_OK): raise SeaCatError(rc)
+		submitCSR(csr_params)
 
 	#
 

@@ -2,6 +2,7 @@ import atexit, threading
 
 from . import plugin
 from .core import reactor, seacatcc
+from .core.csr import submitCSR
 from .exception import SeaCatError
 
 ###
